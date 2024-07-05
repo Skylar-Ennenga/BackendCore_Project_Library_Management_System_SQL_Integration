@@ -1,19 +1,28 @@
 from connect_my_sql import connect_db
 from mysql.connector import Error
 import random
+import re
 
 
 
-
+def verify_email(email):
+    pattern = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}") # Define the regex pattern for email
+    if re.match(pattern, email): # Check if the email matches the pattern
+        return True
+    else:
+        return False
 
 def add_user():
     try:
         conn = connect_db()
         cursor = conn.cursor()
 
-        # collect customer information to add to the database
-        name = input("Please enter the customer's name: ")
-        email = input("Please enter the customer's email: ")
+        # collect user information to add to the database
+        name = input("Please enter the customer's name: ").title()
+        email = input("Please enter the customer's email: ").capitalize()
+        while not verify_email(email): # Validate the email address
+            print("Invalid email address. Please try again.")
+            email = input("Please enter the customer's email: ").capitalize()
         phone = input("Please enter the customer's phone number" )
         library_id = random.randint(1000, 9999)
 
@@ -43,7 +52,7 @@ def view_user_details():
         conn = connect_db()
         cursor = conn.cursor()
         
-        user_id = input("Please iunput your 4 digit library ID: ")
+        user_id = int(input("Please input your user ID#: "))
         query = """ 
         SELECT users.id, users.name, users.email, users.phone, books.title, borrowed_books.borrow_date, borrowed_books.return_date
         FROM users
@@ -60,7 +69,7 @@ def view_user_details():
             print(f"No user found with ID: {user_id}")
             return
     
-        print(records)
+        #print(records)
         #Since the query returns the full query for each book instance we take the user info from the first instance
         user_info = {
             'id': records[0][0],

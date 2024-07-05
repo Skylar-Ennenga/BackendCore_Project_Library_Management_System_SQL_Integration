@@ -2,10 +2,6 @@ from connect_my_sql import connect_db
 from mysql.connector import Error
 
 
-
-
-
-
 def add_author():
     try:
         conn = connect_db()
@@ -76,7 +72,7 @@ def display_all_authors():
         conn = connect_db()
         cursor = conn.cursor()
 
-        # Went with a left join so it would still show the authors even if they didnt have a bv ook assigned to them
+        # Went with a left join so it would still show the authors even if they didnt have a book assigned to them
         query = """ SELECT authors.id, authors.name, books.title
                     FROM authors
                     LEFT JOIN books ON authors.id = books.author_id; 
@@ -99,12 +95,12 @@ def display_all_authors():
             book_title = row[2]
 
             if author_id not in authors_books:
-                authors_books[author_id] = {'name': author_name, 'books': []}
+                authors_books[author_id] = {'name': author_name, 'books': []} #creates a dictionary with the author id as the key and the name and books as the values
             
             if book_title:
-                authors_books[author_id]['books'].append(book_title)
+                authors_books[author_id]['books'].append(book_title) #appends the book title to the books list in the dictionary
         
-        for author_id, author_name in authors_books.items():
+        for author_id, author_name in authors_books.items(): #loops through the dictionary and prints the information
             print(f"\nAuthor ID: {author_id}")
             print(f"Author: {author_name['name']}")
             if author_name['books']:

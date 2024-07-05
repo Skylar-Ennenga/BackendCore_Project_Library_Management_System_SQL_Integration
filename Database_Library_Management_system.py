@@ -1,57 +1,9 @@
 from user_data import add_user, view_user_details, display_all_users
-from book_data import add_book, view_book_details, display_all_books, check_out_book, return_book, search_book_by
+from book_data import add_book, display_all_books, check_out_book, return_book, search_book_by
 from author_data import add_author, view_author_details, display_all_authors
 from connect_my_sql import connect_db
 from mysql.connector import Error
 import re
-
-    # Establish a connection to the MySQL database using the mysql-connector-python library.
-
-    # Create a database cursor to execute SQL queries. Functions for Data Manipulation:
-
-    # Create functions for adding new books, users, authors, and genres to the database.
-
-    # Implement functions for updating book availability, marking books as borrowed or returned.
-
-    # Develop functions for searching books by book_id, title, author, or genre.
-
-    # Define functions for displaying lists of books, users, authors
-
-    # Implement functions for user registration and viewing user details. User Interface Functions:
-
-    # Create a user-friendly command-line interface (CLI) with clear menu options.
-
-    # Implement functions to handle user interactions using the input() function.
-
-    # Validate user input using regular expressions (regex) to ensure proper formatting. Error Handling:
-
-    # Use try, except, else, and finally blocks to manage errors gracefully.
-
-    # Handle exceptions related to database operations, input validation, and other potential issues.
-
-    # Provide informative error messages to guide users. Clean Code Principles:
-
-    # Use meaningful variable and function names that convey their purpose.
-
-    # Write clear comments and docstrings to explain the functionality of functions and classes.
-
-    # Follow PEP 8 style guidelines for code formatting and structure.
-
-    # Ensure proper indentation and spacing for readability. Modular Design:
-
-    # Organize code into separate modules to promote modularity and maintainability.
-
-    # Create distinct modules for database operations, user interactions, error handling, and core functionalities. GitHub Repository:
-
-    # Create a GitHub repository for your project and commit code regularly.
-
-    # Maintain a clean and interactive README.md file in your GitHub repository, providing clear instructions on how to run the application and explanations of its features.
-
-
-
-
-
-
 
 def main(): # Main function to run the program
     while True:
@@ -77,7 +29,7 @@ def book_main(): # Function to run the book operations
         try:
             book_menu_choice = int(input("\nBook Operations: \n1. Add a new book \n2. Checkout a book \n3. Return a book \n4. Search for a book \n5. Display all books \n6. Return to Main Menu \n"))
             if book_menu_choice == 1:
-                choice = input("Before you add a book you will need the Authors ID# of the Author of the book. Would you like to continue? \nYes or No\n").lower()
+                choice = input("Before you add a book you will need the Authors ID#. Would you like to continue? \nYes or No\n").lower()
                 if choice == "yes":
                     add_book()
                 else:
@@ -99,15 +51,6 @@ def book_main(): # Function to run the book operations
                 print("\nPlease choose a number between 1-6\n")
         except ValueError:
             print("\nThats not a number! PLease choose a number between 1-6\n")
-
-def verify_email(email):
-    pattern = re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}") # Define the regex pattern for email
-    if re.match(pattern, email): # Check if the email matches the pattern
-        return True
-    else:
-        return False
-
-
 
 def user_main(): # Function to run the user operations
     while True:

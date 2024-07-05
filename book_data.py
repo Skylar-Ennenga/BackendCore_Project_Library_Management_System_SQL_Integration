@@ -2,8 +2,16 @@ from connect_my_sql import connect_db
 from mysql.connector import Error
 import random
 from datetime import date
+import re
 
 
+
+def verify_pub_date(pub_date):
+    pattern = re.compile(r'^\d{4}-\d{2}-\d{2}$') # Define the regex pattern for email
+    if re.match(pattern, pub_date): # Check if the email matches the pattern
+        return True
+    else:
+        return False
 
 def add_book():    
     try:
@@ -13,24 +21,24 @@ def add_book():
         print("Welcome to adding a book\n")
         title = input("Please enter the Book Title: ")
         author_id = int(input("Please enter the Book Author: "))
-        genre = input("Please enter the Book Genre: ")
+        genre = input("Please enter the Book Genre: ").capitalize()
         isbn = str(random.randint(1000000000000, 9999999999999))
         pub_date = input("Please enter the Book Publication Date: (YYYY-MM-DD) ")
+        while not verify_pub_date(pub_date):
+            print("Invalid date format. Please try again.")
+            pub_date = input("Please enter the Book Publication Date: (YYYY-MM-DD) ")
 
         new_book = (title, author_id, genre, isbn, pub_date)
 
         # query to insert order
         query = "INSERT INTO books(title, author_id, genre, isbn, publication_date) VALUES (%s, %s, %s, %s, %s)"
 
-    # Executing query and committing changes
 
-        # executing query and committing changes
+    # executing query and committing changes
         cursor.execute(query, new_book)
-        
         conn.commit()
         print("Book has been added successfully")
  
-        
     except Error as e:
         print(f"Error: {e}")
 
@@ -39,47 +47,6 @@ def add_book():
             cursor.close() #turns off the cursor
             conn.close() #turns of the connection to the db
 #add_book()
-
-def view_book_details():
-    
-    try:
-        conn = connect_db()
-        cursor = conn.cursor()
-
-        book_name = input("Enter the name of the book you would like to see ")
-        
-        # create a SQL query as a python string
-        query = """
-        SELECT books.title, authors.name, books.genre, books.publication_date, books.availability, books.id 
-        FROM books
-        JOIN authors ON books.author_id = authors.id
-        WHERE books.title = %s
-        """ 
-        # Executing the query using the cursor
-        cursor.execute(query, (book_name,))
-
-        records = cursor.fetchall()
-
-        if not records:
-            print("No book found with that title.")
-            return
-
-        # Loop through the results and print each row of data
-        for row in records:
-            if row[4] == 1:
-                print(f"\nTitle: {row[0]} \nAuthor: {row[1]} \nGenre: {row[2]} \nPublication Date: {row[3]} \nAvailibility: Availible \nCheckout ID# {row[5]}\n")
-
-            elif row[4] == 0:
-                print(f"\nTitle: {row[0]} Author: {row[1]} Genre: {row[2]} Publication Date: {row[3]} Availibility: Borrowed \nCheckout ID# {row[5]}\n")
-    
-    except Error as e:
-        print(f"Error: {e}")
-
-    finally:
-        if conn and conn.is_connected():
-            cursor.close() #turns off the cursor
-            conn.close() #turns of the connection to the db
-#view_book_details()
 
 def display_all_books():
     
@@ -125,25 +92,25 @@ def check_out_book():
         user_id = int(input("Enter your user ID: "))
         book_id = int(input("Enter the book ID to borrow: "))
 
-        query = "SELECT availability FROM books WHERE id = %s"
+        query = "SELECT availability FROM books WHERE id = %s" # Check if the book is available
         # Check if the book is available
-        cursor.execute(query, (book_id,))
+        cursor.execute(query, (book_id,)) # Execute the query with the book_id
         
-        available = cursor.fetchone()[0]
+        available = cursor.fetchone()[0] # Fetch the availability of the book
 
         if not available:
             print("Sorry, this book is not available.")
             return
 
         # Insert into borrowed_books
-        borrow_date = date.today()
+        borrow_date = date.today() # Get the current date
        
-        query = "INSERT INTO borrowed_books (user_id, book_id, borrow_date) VALUES (%s, %s, %s)"
+        query = "INSERT INTO borrowed_books (user_id, book_id, borrow_date) VALUES (%s, %s, %s)" # Insert the user_id, book_id, and borrow_date into the borrowed_books table
         
         
-        cursor.execute(query, (user_id, book_id, borrow_date))
+        cursor.execute(query, (user_id, book_id, borrow_date)) # Execute the query with the user_id, book_id, and borrow_date
 
-        query1 = ("UPDATE books SET availability = 0 WHERE id = %s")
+        query1 = ("UPDATE books SET availability = 0 WHERE id = %s")  # Update the availability of the book to 0 making it not available
         # Update book availability
         cursor.execute(query1, (book_id,))
 
@@ -197,12 +164,12 @@ def search_book_by():
                     conn = connect_db()
                     cursor = conn.cursor()
 
-                    book_name = input("Enter the name of the book you would like to see ")
+                    book_name = input("Enter the name of the book you would like to see ") # Get the book name from the user
                     
-                    # create a SQL query as a python string
+                    # Select the title, author name, genre, publication date, availability, and id from the books table
                     query = """
                     SELECT books.title, authors.name, books.genre, books.publication_date, books.availability, books.id 
-                    FROM books
+                    FROM books 
                     JOIN authors ON books.author_id = authors.id
                     WHERE books.title = %s
                     """ 
